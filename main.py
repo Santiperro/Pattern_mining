@@ -4,5 +4,5 @@ import output
 
 
 majorsdata, bachelorsdata = tf('data.xlsx')
-patternss = search(bachelorsdata)
-output.toXLSX(patternss)
+patterns = search(bachelorsdata)
+output.toXLSX(patterns)
