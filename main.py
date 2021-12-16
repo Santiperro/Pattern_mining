@@ -1,8 +1,8 @@
-from transactional_transformer import transform as tf
-from pattern_miner import search
+from converter import ConvertToTransactions
+from pattern_miner import Mine
 import output
 
 
-majorsdata, bachelorsdata = tf('data.xlsx')
-patterns = search(bachelorsdata)
-output.toXLSX(patterns)
+majorsdata, bachelorsdata = ConvertToTransactions('data.xlsx')
+patterns = Mine(bachelorsdata)
+output.ToXLSX(patterns)

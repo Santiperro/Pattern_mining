@@ -1,6 +1,6 @@
 import mlxtend as mt
 
-def search(transaction_data):
+def Mine(transaction_data):
     print("Searching patterns")
     patterns = []
     return patterns
