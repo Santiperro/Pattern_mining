@@ -1,8 +1,8 @@
-from converter import ConvertToTransactions
-from pattern_miner import Mine
+from converter import convert_to_transactions
+from pattern_miner import mine
 import output
 
 
-majorsdata, bachelorsdata = ConvertToTransactions('data.xlsx')
-patterns = Mine(bachelorsdata)
-output.ToXLSX(patterns)
+majors_data, bachelors_data = convert_to_transactions('data.xlsx')
+patterns = mine(bachelors_data)
+output.to_xlsx(patterns)

@@ -1,11 +1,11 @@
 import pandas as pd
 
 
-def ToCSV(patterns):
+def to_csv(patterns):
     print("Transformation patterns to CSV")
     return patterns
 
 
-def ToXLSX(patterns):
+def to_xlsx(patterns):
     print("Transformation patterns to XLSX")
     return patterns
