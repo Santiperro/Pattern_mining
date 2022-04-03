@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 
-
 hes_limit = 80  # Установленный лимит среднего балла для высокобальника
 
 hqap_percentages = [50, 75, 85, 100]  # Установленные проценты оценок не ниже 4 за сессию
@@ -29,7 +28,7 @@ def add_transactions(data):
 
         for number in terms:
             term_adding_area = id_adding_area[id_adding_area['TERM_NUM'].isin([number])]  # область данных со значением
-            term_adding_area.reset_index(drop=True, inplace=True)                    # конкретного id и номера семестра
+            term_adding_area.reset_index(drop=True, inplace=True)  # конкретного id и номера семестра
 
             transaction = [f'Term{int(number)}']  # добавление товара семестра
 
@@ -39,7 +38,7 @@ def add_transactions(data):
 
             # добавление товара высоких или средних баллов
             points = id_adding_area[id_adding_area['MARK_KIND'].isin(['1. Вступительные испытания'])]['MARK']
-            if points.sum() / len(points) >= hes_limit:
+            if (len(points) != 0) and (points.sum() / len(points) >= hes_limit):
                 transaction.append('HES')
             else:
                 transaction.append('OES')
@@ -60,9 +59,12 @@ def add_transactions(data):
             transaction.append(f'HQAP{int(cur_percent)}')
 
             # добавление товара с оценкой защиты ВКР
-            fqw = id_adding_area[id_adding_area['SUBJECT_NAME'].isin(['Защита выпускной квалификационной работы'])]['MARK']
+            fqw = id_adding_area[id_adding_area['SUBJECT_NAME'].isin(['Защита выпускной квалификационной работы'])][
+                'MARK']
             if not fqw.empty:
                 transaction.append(f'FQW{int(fqw)}')
+            else:
+                transaction.append('NoFQW')
 
             # добавление товара пересдача или не пересдача
             if term_adding_area['IS_REEXAM'].isin(['пересдача']).any():
@@ -88,3 +90,8 @@ def convert_to_transactions(filename):
     majors_transactions = add_transactions(majors_data)
 
     return bachelors_transactions, majors_transactions
+    # bachelors_transactions.to_csv(r'C:\Users\megan\PycharmProjects\PatternMining\bachelors_transactions.csv')
+    # majors_transactions.to_csv(r'C:\Users\megan\PycharmProjects\PatternMining\majors_transactions.csv')
+
+
+convert_to_transactions('data.xlsx')
