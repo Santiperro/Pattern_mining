@@ -1,31 +1,55 @@
 import pandas as pd
-import numpy as np
 from mlxtend.frequent_patterns import apriori
 from mlxtend.frequent_patterns import association_rules
 
 
-min_sup = 0.3  # Минимальная поддержка
+def digit_search(string):  # Нахождение и возврат цифр из строки
+    digits = ''
+    for s in string:
+        if s.isdigit():
+            digits += s
+    return digits
 
 
-def mine():
-    bachelors_df = pd.read_csv(r'C:\Users\megan\PycharmProjects\PatternMining\bachelors_transactions.csv')
-    majors_df = pd.read_csv(r'C:\Users\megan\PycharmProjects\PatternMining\majors_transactions.csv')
+def translate(column, _goods_dict):  # Перевод массива кодовых товаров в понимаемые
+    for i in range(len(column)):
+        cell = list(column[i])
+        for j in range(len(cell)):
+            for k in range(len(_goods_dict)):
+                if _goods_dict['good'][k] in cell[j]:
+                    digit = digit_search(cell[j])
+                    cell[j] = str(_goods_dict['semantics'][k]) + digit
+        column[i] = cell
+    return column
 
-    bachelors_df.rename(columns={'Unnamed: 0': 'Index'}, inplace=True)
-    majors_df.rename(columns={'Unnamed: 0': 'Index'}, inplace=True)
 
-    bachelors_df = bachelors_df.set_index('Index')
-    majors_df = majors_df.set_index('Index')
+# Используемый словарь для декодирования товаров
+goods_dict = pd.read_excel(r'C:\Users\megan\PycharmProjects\PatternMining\dictionary_of_goods.xlsx')
 
-    bachelors_matrix = pd.get_dummies(bachelors_df, columns=['0', '1', '2', '3', '4', '5', '6'])
-    columns = list(bachelors_matrix.columns)
+
+def mine(transactions, _min_supp): # Поиск шаблонов с установаленной минимальной поддержкой
+
+    # Преобразование в вид разреженной матрицы
+    columns = list(transactions.columns)
+    transactions_matrix = pd.get_dummies(transactions, columns=columns)
+
+    # Редактирование названий столбцов
+    columns = list(transactions_matrix.columns)
     for column in columns:
-        bachelors_matrix.rename(columns={column: column[2:]}, inplace=True)
+        transactions_matrix.rename(columns={column: column[2:]}, inplace=True)
 
-    freaquent_itemsets = apriori(bachelors_matrix, min_support=min_sup, use_colnames=True)
+    # Поиск частых наборов с параметром минимальной поддержки
+    freaquent_itemsets = apriori(transactions_matrix, min_support=_min_supp, use_colnames=True)
 
+    # Поиск ассоциативных правил с заданной метрикой и её минимальным значением
     rules = association_rules(freaquent_itemsets, metric='lift', min_threshold=1)
 
-    print(bachelors_matrix)
+    # Перевод столбцов антецендента и консеквента в понимаемый вид
+    rules['antecedents'] = translate(list(rules['antecedents']), goods_dict)
+    rules['consequents'] = translate(list(rules['consequents']), goods_dict)
 
-mine()
+    return rules
+
+
+# ts = pd.read_csv('bachelors_transactions.csv')
+# print(mine(ts, 0.25))

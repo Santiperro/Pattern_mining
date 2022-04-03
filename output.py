@@ -1,9 +1,6 @@
-import pandas as pd
+def to_csv(patterns, path):  # Импорт в csv
+    patterns.to_csv(path)
 
 
-def to_csv(patterns):
-    print("Transformation patterns to CSV")
-
-
-def to_xlsx(patterns):
-    print("Transformation patterns to XLSX")
+def to_xlsx(patterns, path):  # Импорт в excel
+    patterns.to_excel(path)
